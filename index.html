@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Passage - Student exchange information portal</title>
+  <meta name="description" content="Compare partner universities, check eligibility, keep your documents in order and track your exchange application.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="home">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="brand" href="index.html">
+        <span class="brand-name">Passage</span>
+        <span class="brand-tag">Student exchange portal</span>
+      </a>
+      <nav aria-label="Main">
+        <ul class="nav">
+          <li><a href="index.html" aria-current="page">Home</a></li>
+          <li><a href="programs.html">Programs</a></li>
+          <li><a href="saved.html">Saved <span class="count" id="savedCount" hidden>0</span></a></li>
+          <li><a href="applications.html">My applications</a></li>
+          <li><a href="admin.html">Admin</a></li>
+          <li id="authItem"><a href="login.html">Log in</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <h1>Your semester abroad starts with the right shortlist</h1>
+          <p class="lead">Compare partner universities, check whether you qualify, and keep every document and deadline in one place.</p>
+
+          <form class="finder" action="programs.html" method="get">
+            <div class="field">
+              <label for="homeCountry">Destination</label>
+              <select id="homeCountry" name="country"><option value="">Any country</option></select>
+            </div>
+            <div class="field">
+              <label for="homeField">Field of study</label>
+              <select id="homeField" name="field"><option value="">Any field</option></select>
+            </div>
+            <button type="submit" class="btn btn-primary">Search programs</button>
+          </form>
+        </div>
+
+        <div class="hero-side">
+          <h2 class="hero-side-title">Closing soonest</h2>
+          <div id="heroTickets" class="hero-tickets"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="stepsHeading">
+      <div class="container">
+        <h2 id="stepsHeading">How an application works</h2>
+        <ol class="steps">
+          <li>
+            <h3>Browse programs</h3>
+            <p>Filter by country and field, and save the ones you like.</p>
+          </li>
+          <li>
+            <h3>Check eligibility</h3>
+            <p>Enter your CGPA and semesters completed to see if you meet the rules.</p>
+          </li>
+          <li>
+            <h3>Gather documents</h3>
+            <p>Tick each document on the checklist as you collect it.</p>
+          </li>
+          <li>
+            <h3>Apply and track</h3>
+            <p>Submit when everything is ready, then follow the status.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section section-tint" aria-labelledby="partnersHeading">
+      <div class="container">
+        <h2 id="partnersHeading">Partner institutions</h2>
+        <p class="section-intro">Choose an institution to see the programs it offers.</p>
+        <div class="table-wrap">
+          <table class="table">
+            <caption class="visually-hidden">Partner institutions and the number of programs each offers</caption>
+            <thead>
+              <tr>
+                <th scope="col">Institution</th>
+                <th scope="col">City</th>
+                <th scope="col">Country</th>
+                <th scope="col">Programs</th>
+              </tr>
+            </thead>
+            <tbody id="partnerRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Passage is a CSE326 course project. Every university, program and date shown is sample data.</p>
+      <p>Team: Himanshu Kumar Yadav, Debashish Swain and Ismita Singh. Section K3P26CP.</p>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

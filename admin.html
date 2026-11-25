@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin - Passage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="admin">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="brand" href="index.html">
+        <span class="brand-name">Passage</span>
+        <span class="brand-tag">Student exchange portal</span>
+      </a>
+      <nav aria-label="Main">
+        <ul class="nav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="programs.html">Programs</a></li>
+          <li><a href="saved.html">Saved <span class="count" id="savedCount" hidden>0</span></a></li>
+          <li><a href="applications.html">My applications</a></li>
+          <li><a href="admin.html" aria-current="page">Admin</a></li>
+          <li id="authItem"><a href="login.html">Log in</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container page">
+
+    <!-- Shown until the admin logs in -->
+    <section id="loginPanel" class="login-panel" aria-labelledby="loginHeading">
+      <h1 id="loginHeading">Admin login</h1>
+      <p class="lead">Exchange office staff can add programs, edit details and update application statuses.</p>
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="loginUser">Username</label>
+          <input id="loginUser" type="text" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="loginPass">Password</label>
+          <input id="loginPass" type="password" autocomplete="current-password" required>
+        </div>
+        <p class="field-error" id="loginError" role="alert"></p>
+        <button type="submit" class="btn btn-primary">Log in</button>
+      </form>
+      <p class="hint">Demo login for this project: username <strong>admin</strong>, password <strong>exchange@123</strong>.</p>
+    </section>
+
+    <!-- Shown after the admin logs in -->
+    <div id="adminPanel" hidden>
+      <div class="page-head page-head-row">
+        <div>
+          <h1>Manage exchange programs</h1>
+          <p class="lead">Changes appear on the student pages straight away.</p>
+        </div>
+        <button type="button" class="btn btn-outline" id="logoutBtn">Log out</button>
+      </div>
+
+      <section class="admin-block" aria-labelledby="progTableHeading">
+        <div class="results-head">
+          <h2 id="progTableHeading">Programs</h2>
+          <p id="programCount"></p>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <caption class="visually-hidden">All exchange programs</caption>
+            <thead>
+              <tr>
+                <th scope="col">Program</th>
+                <th scope="col">Location</th>
+                <th scope="col">Apply by</th>
+                <th scope="col">Seats</th>
+                <th scope="col">Min. CGPA</th>
+                <th scope="col"><span class="visually-hidden">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody id="programRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="admin-block" aria-labelledby="formHeading">
+        <h2 id="formHeading">Add a program</h2>
+        <form id="programForm" class="admin-form" novalidate>
+          <div class="field">
+            <label for="f-institution">Institution</label>
+            <input id="f-institution" type="text" aria-describedby="err-institution">
+            <span class="field-error" id="err-institution"></span>
+          </div>
+          <div class="field">
+            <label for="f-title">Program title</label>
+            <input id="f-title" type="text" aria-describedby="err-title">
+            <span class="field-error" id="err-title"></span>
+          </div>
+          <div class="field">
+            <label for="f-city">City</label>
+            <input id="f-city" type="text" aria-describedby="err-city">
+            <span class="field-error" id="err-city"></span>
+          </div>
+          <div class="field">
+            <label for="f-country">Country</label>
+            <input id="f-country" type="text" aria-describedby="err-country">
+            <span class="field-error" id="err-country"></span>
+          </div>
+          <div class="field">
+            <label for="f-code">City code (3 letters)</label>
+            <input id="f-code" type="text" maxlength="3" placeholder="YVR" aria-describedby="err-code">
+            <span class="field-error" id="err-code"></span>
+          </div>
+          <div class="field">
+            <label for="f-field">Field of study</label>
+            <select id="f-field"></select>
+          </div>
+          <div class="field">
+            <label for="f-duration">Duration</label>
+            <input id="f-duration" type="text" placeholder="1 semester" aria-describedby="err-duration">
+            <span class="field-error" id="err-duration"></span>
+          </div>
+          <div class="field">
+            <label for="f-intake">Intake</label>
+            <input id="f-intake" type="text" placeholder="January 2027" aria-describedby="err-intake">
+            <span class="field-error" id="err-intake"></span>
+          </div>
+          <div class="field">
+            <label for="f-seats">Seats</label>
+            <input id="f-seats" type="number" min="1" step="1" aria-describedby="err-seats">
+            <span class="field-error" id="err-seats"></span>
+          </div>
+          <div class="field">
+            <label for="f-deadline">Apply-by date</label>
+            <input id="f-deadline" type="date" aria-describedby="err-deadline">
+            <span class="field-error" id="err-deadline"></span>
+          </div>
+          <div class="field">
+            <label for="f-minCgpa">Minimum CGPA</label>
+            <input id="f-minCgpa" type="number" min="0" max="10" step="0.1" aria-describedby="err-minCgpa">
+            <span class="field-error" id="err-minCgpa"></span>
+          </div>
+          <div class="field">
+            <label for="f-minSemester">Minimum semesters completed</label>
+            <input id="f-minSemester" type="number" min="0" max="12" step="1" aria-describedby="err-minSemester">
+            <span class="field-error" id="err-minSemester"></span>
+          </div>
+          <div class="field wide">
+            <label for="f-language">Language requirement</label>
+            <input id="f-language" type="text" aria-describedby="err-language">
+            <span class="field-error" id="err-language"></span>
+          </div>
+          <div class="field wide">
+            <label for="f-fees">Fees and costs</label>
+            <input id="f-fees" type="text" aria-describedby="err-fees">
+            <span class="field-error" id="err-fees"></span>
+          </div>
+          <div class="field wide">
+            <label for="f-about">About the program</label>
+            <textarea id="f-about" rows="3" aria-describedby="err-about"></textarea>
+            <span class="field-error" id="err-about"></span>
+          </div>
+          <div class="field">
+            <label for="f-courses">Key courses (one per line)</label>
+            <textarea id="f-courses" rows="5" aria-describedby="err-courses"></textarea>
+            <span class="field-error" id="err-courses"></span>
+          </div>
+          <div class="field">
+            <label for="f-documents">Required documents (one per line)</label>
+            <textarea id="f-documents" rows="5" aria-describedby="err-documents"></textarea>
+            <span class="field-error" id="err-documents"></span>
+          </div>
+          <div class="form-actions wide">
+            <button type="submit" class="btn btn-primary" id="saveProgram">Add program</button>
+            <button type="button" class="btn btn-ghost" id="cancelEdit" hidden>Cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="admin-block" aria-labelledby="appsHeading">
+        <h2 id="appsHeading">Applications</h2>
+        <p class="section-intro">These are the applications made in this browser. A real portal would keep them on a server so staff could see every student's application.</p>
+        <p id="noApps" class="hint">No applications yet. Start one from a program page.</p>
+        <div class="table-wrap">
+          <table class="table" id="appTable">
+            <caption class="visually-hidden">Applications and their status</caption>
+            <thead>
+              <tr>
+                <th scope="col">Student</th>
+                <th scope="col">Program</th>
+                <th scope="col">Status</th>
+                <th scope="col">Last updated</th>
+              </tr>
+            </thead>
+            <tbody id="appRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="admin-block" aria-labelledby="resetHeading">
+        <h2 id="resetHeading">Sample data</h2>
+        <p class="section-intro">Put the original ten programs back and clear every saved program and application.</p>
+        <button type="button" class="btn btn-danger" id="resetData">Reset to sample data</button>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Passage is a CSE326 course project. Every university, program and date shown is sample data.</p>
+      <p>Team: Himanshu Kumar Yadav, Debashish Swain and Ismita Singh. Section K3P26CP.</p>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

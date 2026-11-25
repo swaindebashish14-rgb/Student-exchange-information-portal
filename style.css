@@ -1,0 +1,542 @@
+/* ==========================================================================
+   style.css  -  Passage: Student Exchange Information Portal
+
+   Look and feel: an airline boarding pass. Each program is a ticket with a
+   big city code on the left and the application deadline on the tear-off
+   stub on the right. Application statuses look like passport stamps.
+
+   Sections
+     1. Colours, fonts and base styles
+     2. Layout helpers
+     3. Header and navigation
+     4. Buttons and form controls
+     5. Ticket card
+     6. Home page
+     7. Programs page
+     8. Program detail page
+     9. Applications, stamps and progress track
+    10. Admin page
+    11. Toast, empty states, footer
+    12. Small screens
+    13. Reduced motion
+   ========================================================================== */
+
+
+/* ---------- 1. Colours, fonts and base styles ------------------------------ */
+
+:root {
+  --paper: #f4f6f9;        /* page background */
+  --surface: #ffffff;      /* cards, inputs */
+  --ink: #19233a;          /* main text */
+  --ink-soft: #4f5b75;     /* secondary text */
+  --blue: #1d4fa3;         /* airmail blue: links, buttons, city codes */
+  --blue-dark: #163c7d;
+  --red: #c62f35;          /* airmail red: urgent, errors, header stripe */
+  --sky: #dfeaf9;         /* light blue tint */
+  --line: #d5dce8;         /* thin borders */
+  --line-strong: #aeb9ce;  /* input borders, dashed perforation */
+  --green: #1f7a57;
+  --amber: #9a5b00;
+
+  --font-display: "Poppins", "Segoe UI", Arial, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+/* The hidden attribute only works if no other rule sets display on the same
+   element. Classes such as .btn set display, so this rule makes hidden win. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 0.5em;
+}
+h1 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); letter-spacing: -0.01em; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.05rem; }
+
+p { margin: 0 0 1em; }
+
+a { color: var(--blue); }
+a:hover { color: var(--blue-dark); }
+
+/* Visible keyboard focus on everything you can tab to. */
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+
+/* ---------- 2. Layout helpers ---------------------------------------------- */
+
+.container { width: min(1120px, 100% - 40px); margin-inline: auto; }
+
+.page { padding-top: 44px; }
+.page-head { margin-bottom: 32px; }
+.page-head-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+
+.lead { max-width: 56ch; font-size: 1.1rem; color: var(--ink-soft); }
+.hint { color: var(--ink-soft); font-size: 0.92rem; }
+.note { margin: 0 0 12px; color: var(--ink-soft); font-size: 0.95rem; }
+.section-intro { color: var(--ink-soft); max-width: 60ch; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute; left: 12px; top: -60px; z-index: 100;
+  background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 6px;
+}
+.skip-link:focus { top: 12px; }
+
+
+/* ---------- 3. Header and navigation --------------------------------------- */
+
+.site-header {
+  position: relative;
+  padding-top: 6px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+/* The airmail-envelope stripe along the very top of every page. */
+.site-header::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 6px;
+  background: repeating-linear-gradient(135deg,
+    var(--red) 0 14px, var(--surface) 14px 22px,
+    var(--blue) 22px 36px, var(--surface) 36px 44px);
+}
+
+.header-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 68px; flex-wrap: wrap; }
+
+.brand { display: flex; align-items: baseline; gap: 12px; text-decoration: none; color: var(--ink); }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; letter-spacing: -0.02em; color: var(--blue); }
+.brand-tag { font-size: 0.875rem; color: var(--ink-soft); }
+
+.nav { display: flex; flex-wrap: wrap; gap: 4px; list-style: none; margin: 0; padding: 0; }
+.nav a {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 6px;
+  color: var(--ink); text-decoration: none; font-weight: 500; font-size: 0.95rem;
+}
+.nav a:hover { background: var(--paper); }
+.nav a[aria-current="page"] { background: var(--sky); color: var(--blue-dark); font-weight: 600; }
+
+/* Number of saved programs. */
+.count {
+  display: inline-block; min-width: 20px; padding: 0 6px;
+  border-radius: 10px; background: var(--red); color: #fff;
+  font-size: 0.75rem; font-weight: 600; line-height: 20px; text-align: center;
+}
+.count[hidden] { display: none; }
+
+
+/* ---------- 4. Buttons and form controls ----------------------------------- */
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 42px; padding: 0 18px;
+  border: 1.5px solid transparent; border-radius: 6px;
+  font: 600 0.95rem/1 var(--font-body);
+  text-decoration: none; cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+.btn-small { min-height: 36px; padding: 0 14px; font-size: 0.875rem; }
+
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: var(--blue-dark); color: #fff; }
+
+.btn-outline { background: transparent; border-color: var(--blue); color: var(--blue); }
+.btn-outline:hover { background: var(--sky); color: var(--blue-dark); }
+.btn-outline[aria-pressed="true"] { background: var(--sky); }
+
+.btn-ghost { background: transparent; color: var(--ink-soft); }
+.btn-ghost:hover { background: var(--line); color: var(--ink); }
+
+.btn-danger { background: transparent; border-color: var(--red); color: var(--red); }
+.btn-danger:hover { background: #fbe9ea; color: var(--red); }
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+label { font-weight: 500; font-size: 0.9rem; }
+
+input, select, textarea {
+  width: 100%; min-height: 42px; padding: 8px 12px;
+  font: inherit; color: inherit;
+  background: var(--surface);
+  border: 1px solid var(--line-strong); border-radius: 6px;
+}
+textarea { resize: vertical; line-height: 1.5; }
+input[type="checkbox"] { width: 18px; height: 18px; min-height: 0; padding: 0; accent-color: var(--blue); flex: none; }
+[aria-invalid="true"] { border-color: var(--red); }
+
+.field { display: grid; gap: 6px; align-content: start; }
+.field-error { color: var(--red); font-size: 0.875rem; font-weight: 500; margin: 0; }
+.field-error:empty { display: none; }
+
+.check { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 400; cursor: pointer; }
+
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend { float: left; width: 100%; padding: 0; margin: 0 0 12px; font-weight: 600; font-size: 0.95rem; }
+legend + * { clear: both; }
+
+
+/* ---------- 5. Ticket card ------------------------------------------------- */
+
+.ticket-list { display: grid; gap: 18px; }
+
+.ticket {
+  --stub-w: 150px;     /* width of the tear-off stub */
+  --notch: 10px;       /* size of the bites taken out of the perforation */
+  display: grid;
+  grid-template-columns: 1fr var(--stub-w);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  /* Two masks cut a half-circle out of the top and bottom edge, right where
+     the stub is torn off. */
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at calc(100% - var(--stub-w)) 0, transparent 97%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at calc(100% - var(--stub-w)) 100%, transparent 97%, #000) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at calc(100% - var(--stub-w)) 0, transparent 97%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at calc(100% - var(--stub-w)) 100%, transparent 97%, #000) bottom / 100% 51% no-repeat;
+  transition: border-color 0.15s;
+}
+.ticket:hover { border-color: var(--line-strong); }
+
+.ticket-main { padding: 22px 26px 22px; min-width: 0; }
+
+.ticket-code {
+  margin: 0; font-family: var(--font-display); font-weight: 700;
+  font-size: 3.2rem; line-height: 1; letter-spacing: 0.02em; color: var(--blue);
+}
+.ticket-place { margin: 6px 0 14px; color: var(--ink-soft); font-size: 0.95rem; }
+.ticket-title { margin: 0 0 2px; font-size: 1.15rem; }
+.ticket-title a { color: var(--ink); text-decoration: none; }
+.ticket-title a:hover { color: var(--blue); text-decoration: underline; }
+.ticket-inst { margin: 0; color: var(--ink-soft); }
+
+.ticket-facts { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; gap: 12px 28px; margin: 18px 0 0; }
+.ticket-facts dt { font-size: 0.8rem; color: var(--ink-soft); }
+.ticket-facts dd { margin: 0; font-weight: 500; font-size: 0.95rem; }
+
+.ticket-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 20px; }
+.ticket-note { font-size: 0.875rem; color: var(--ink-soft); }
+
+.ticket-stub {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 20px 14px; text-align: center;
+  background: #f0f5fc;
+  border-left: 2px dashed var(--line-strong);
+}
+.stub-label { margin: 0 0 6px; font-size: 0.85rem; color: var(--ink-soft); }
+.stub-date { margin: 0; display: flex; flex-direction: column; align-items: center; }
+.stub-day { font-family: var(--font-display); font-weight: 700; font-size: 2.6rem; line-height: 1; }
+.stub-month { font-size: 0.875rem; color: var(--ink-soft); }
+.stub-left { margin: 10px 0 0; font-size: 0.875rem; font-weight: 600; color: var(--ink-soft); }
+.stub-left.is-urgent { color: var(--red); }
+
+/* Closed programs look faded. */
+.ticket.is-closed { opacity: 0.8; }
+.ticket.is-closed .ticket-code { color: var(--ink-soft); }
+
+/* Smaller version used on the home page. */
+.ticket--compact { --stub-w: 118px; }
+.ticket--compact .ticket-main { padding: 16px 20px; }
+.ticket--compact .ticket-code { font-size: 2.3rem; }
+.ticket--compact .ticket-place { margin: 4px 0 8px; font-size: 0.875rem; }
+.ticket--compact .ticket-title { font-size: 1rem; }
+.ticket--compact .ticket-inst { font-size: 0.875rem; }
+.ticket--compact .ticket-stub { padding: 12px 8px; }
+.ticket--compact .stub-day { font-size: 2rem; }
+
+
+/* ---------- 6. Home page --------------------------------------------------- */
+
+.hero { padding: 64px 0 72px; border-bottom: 1px solid var(--line); overflow-x: clip; }
+.hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+
+.hero h1 { font-size: clamp(2.2rem, 4.4vw, 3.5rem); line-height: 1.08; letter-spacing: -0.025em; max-width: 17ch; margin-bottom: 20px; }
+
+.finder {
+  display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: end;
+  margin-top: 32px; padding: 20px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+}
+
+.hero-side-title { margin: 0 0 14px; font-size: 1rem; color: var(--ink-soft); font-weight: 500; }
+.hero-tickets { display: grid; gap: 14px; }
+.hero-tickets .ticket:nth-child(2) { margin-left: 28px; }
+.hero-tickets .ticket:nth-child(3) { margin-left: 56px; }
+
+/* The one moment of motion on the site: the three tickets slide in. */
+@keyframes ticket-in {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: none; }
+}
+.hero-tickets .ticket { animation: ticket-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.hero-tickets .ticket:nth-child(2) { animation-delay: 0.15s; }
+.hero-tickets .ticket:nth-child(3) { animation-delay: 0.3s; }
+
+.section { padding: 64px 0; }
+.section-tint { background: var(--surface); border-block: 1px solid var(--line); }
+
+/* "How it works" really is a sequence, so the numbers mean something. */
+.steps { list-style: none; counter-reset: step; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin: 28px 0 0; padding: 0; }
+.steps li { counter-increment: step; border-top: 2px solid var(--ink); padding-top: 14px; }
+.steps li::before { content: counter(step); display: block; margin-bottom: 6px; font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; color: var(--blue); }
+.steps h3 { margin-bottom: 6px; }
+.steps p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+
+.table-wrap { overflow-x: auto; margin-top: 16px; }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 13px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.table thead th { font-size: 0.875rem; font-weight: 600; color: var(--ink-soft); border-bottom: 2px solid var(--ink); }
+.table tbody th { font-weight: 600; }
+.cell-sub { display: block; margin-top: 2px; font-weight: 400; font-size: 0.875rem; color: var(--ink-soft); }
+.row-actions { white-space: nowrap; text-align: right; }
+
+
+/* ---------- 7. Programs page ----------------------------------------------- */
+
+.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 40px; align-items: start; }
+
+.filters {
+  position: sticky; top: 16px;
+  display: grid; gap: 16px;
+  padding: 20px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+}
+.about-me { padding-top: 16px; border-top: 1px solid var(--line); display: grid; gap: 14px; }
+.about-me legend { margin-bottom: 0; }
+
+.results-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 16px; }
+.results-head h2 { margin: 0; }
+.results-head p { margin: 0; color: var(--ink-soft); }
+
+
+/* ---------- 8. Program detail page ----------------------------------------- */
+
+.back-link { display: inline-block; margin-bottom: 24px; font-weight: 500; }
+
+.detail-head {
+  display: grid; grid-template-columns: 1fr 330px; gap: 40px; align-items: start;
+  padding-bottom: 36px; border-bottom: 1px solid var(--line);
+}
+.detail-code { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 4.6rem; line-height: 1; letter-spacing: 0.02em; color: var(--blue); }
+.detail-head h1 { margin: 10px 0 8px; }
+.detail-inst { margin: 0; color: var(--ink-soft); font-size: 1.05rem; }
+
+.apply-box {
+  display: grid; gap: 12px;
+  padding: 22px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+}
+.apply-box p { margin: 0; }
+.apply-box .btn { width: 100%; }
+.apply-box .btn-ghost { margin-top: 4px; }
+.apply-deadline { font-size: 1.05rem; }
+.apply-box .stub-left { margin: 0; font-size: 0.95rem; }
+#applyPanel { display: grid; gap: 12px; }
+
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px 56px; padding-top: 40px; }
+.detail-grid h2 { font-size: 1.25rem; }
+.detail-grid h3 { margin-top: 24px; }
+
+.plain-list { margin: 0; padding-left: 20px; }
+.plain-list li { margin-bottom: 4px; }
+
+.detail-list { margin: 0; }
+.detail-list > div { display: grid; grid-template-columns: 160px 1fr; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.detail-list > div:first-child { border-top: 1px solid var(--line); }
+.detail-list dt { color: var(--ink-soft); font-size: 0.95rem; }
+.detail-list dd { margin: 0; }
+
+.inline-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+
+.criteria { list-style: none; margin: 0 0 14px; padding: 0; }
+.criteria li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+.mark { flex: none; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem; font-weight: 700; }
+.is-met .mark { background: #dcf0e7; color: var(--green); }
+.is-unmet .mark { background: #fbe4e5; color: var(--red); }
+.verdict { margin: 0; padding: 10px 14px; border-left: 4px solid; font-weight: 600; }
+.verdict.is-met { border-color: var(--green); background: #eef8f3; }
+.verdict.is-unmet { border-color: var(--red); background: #fdf1f1; }
+
+.progress-text { margin: 0 0 8px; color: var(--ink-soft); font-size: 0.95rem; }
+progress { display: block; width: 100%; height: 10px; border: 0; border-radius: 5px; overflow: hidden; background: var(--line); -webkit-appearance: none; appearance: none; }
+progress::-webkit-progress-bar { background: var(--line); }
+progress::-webkit-progress-value { background: var(--blue); }
+progress::-moz-progress-bar { background: var(--blue); }
+
+.checklist { list-style: none; margin: 14px 0 0; padding: 0; }
+.checklist li { border-bottom: 1px solid var(--line); }
+.checklist label { display: flex; align-items: center; gap: 12px; padding: 12px 0; font-size: 1rem; font-weight: 400; cursor: pointer; }
+
+
+/* ---------- 9. Applications, stamps and progress track --------------------- */
+
+/* A rubber-stamp look for the application status. */
+.stamp {
+  --c: var(--ink-soft);
+  display: inline-block; padding: 4px 12px;
+  font: 700 0.8rem/1.2 var(--font-display); letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--c);
+  border: 2px solid var(--c); border-radius: 4px;
+  outline: 1px solid var(--c); outline-offset: 2px;
+  transform: rotate(-4deg);
+}
+.stamp-draft { --c: var(--ink-soft); }
+.stamp-submitted { --c: var(--blue); }
+.stamp-under-review { --c: var(--amber); }
+.stamp-accepted { --c: var(--green); }
+.stamp-rejected { --c: var(--red); }
+.stamp-line { margin: 4px 0 6px; }
+
+.app-list { border-top: 1px solid var(--line); }
+.app-row {
+  display: grid; grid-template-columns: 1.1fr 1.7fr auto; gap: 36px; align-items: center;
+  padding: 26px 0; border-bottom: 1px solid var(--line);
+}
+.app-code { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 1.7rem; line-height: 1; color: var(--blue); }
+.app-title { margin: 6px 0 2px; font-size: 1.1rem; }
+.app-title a { color: var(--ink); text-decoration: none; }
+.app-title a:hover { color: var(--blue); text-decoration: underline; }
+.app-inst { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+.app-docs { margin: 10px 0 0; color: var(--ink-soft); font-size: 0.9rem; }
+.app-side { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+
+/* Draft > Submitted > Under review > Decision */
+.track { display: flex; margin: 0; padding: 0; list-style: none; }
+.track li { position: relative; flex: 1; padding-top: 24px; font-size: 0.85rem; color: var(--ink-soft); }
+.track li::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 16px; height: 16px;
+  border-radius: 50%; background: var(--surface); border: 2px solid var(--line-strong);
+}
+.track li::after { content: ""; position: absolute; top: 7px; left: 20px; right: 4px; height: 2px; background: var(--line); }
+.track li:last-child::after { display: none; }
+.track li.done::before { background: var(--blue); border-color: var(--blue); }
+.track li.done::after { background: var(--blue); }
+.track li.current { color: var(--ink); font-weight: 600; }
+.track li.current::before { border: 4px solid var(--blue); box-shadow: 0 0 0 4px var(--sky); }
+.track li.decision-accepted::before { background: var(--green); border-color: var(--green); box-shadow: 0 0 0 4px #dcf0e7; }
+.track li.decision-rejected::before { background: var(--red); border-color: var(--red); box-shadow: 0 0 0 4px #fbe4e5; }
+
+
+/* ---------- 10. Admin page ------------------------------------------------- */
+
+.login-panel { max-width: 440px; }
+.login-panel form { display: grid; gap: 16px; margin: 24px 0 16px; }
+
+.admin-block { margin-top: 56px; }
+.admin-block:first-of-type { margin-top: 0; }
+
+.admin-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; margin-top: 16px; max-width: 860px; }
+.admin-form .wide { grid-column: 1 / -1; }
+.form-actions { display: flex; gap: 12px; }
+
+#appRows select { min-height: 36px; padding: 4px 10px; width: auto; }
+
+
+/* Student login page and the "Hi, Name / Log out" item in the menu */
+.auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; margin-bottom: 24px; }
+.auth-grid .login-panel { max-width: none; }
+.auth-h2 { margin: 0 0 8px; font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.3rem); line-height: 1.15; }
+.nav #authItem { display: flex; align-items: center; gap: 8px; padding: 8px 14px; font-size: 0.95rem; }
+.nav #authItem a { padding: 0; }
+.nav #authItem a:hover { background: none; text-decoration: underline; }
+.nav .who { font-weight: 600; color: var(--ink); }
+.link-btn { background: none; border: 0; padding: 0; font: inherit; color: var(--blue); text-decoration: underline; cursor: pointer; }
+.link-btn:hover { color: var(--blue-dark); }
+
+
+/* ---------- 11. Toast, empty states, footer -------------------------------- */
+
+.toast {
+  position: fixed; left: 50%; bottom: 24px; z-index: 50;
+  transform: translate(-50%, 16px); opacity: 0; pointer-events: none;
+  padding: 12px 20px; border-radius: 8px;
+  background: var(--ink); color: #fff; font-size: 0.95rem; font-weight: 500;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+.empty {
+  max-width: 560px; padding: 32px;
+  background: var(--surface); border: 1px dashed var(--line-strong); border-radius: 10px;
+}
+.empty h1, .empty h2, .empty h3 { margin-bottom: 8px; font-size: 1.25rem; }
+.empty p { color: var(--ink-soft); }
+
+.site-footer { margin-top: 88px; padding: 28px 0 36px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 0.875rem; }
+.site-footer p { margin: 0 0 4px; }
+
+
+/* ---------- 12. Small screens ---------------------------------------------- */
+
+@media (max-width: 900px) {
+  .auth-grid { grid-template-columns: 1fr; gap: 32px; }
+  .hero-grid, .layout, .detail-head, .detail-grid { grid-template-columns: 1fr; }
+  .hero-grid { gap: 40px; }
+  .hero-tickets .ticket:nth-child(2), .hero-tickets .ticket:nth-child(3) { margin-left: 0; }
+  .filters { position: static; }
+  .steps { grid-template-columns: repeat(2, 1fr); }
+  .app-row { grid-template-columns: 1fr; gap: 20px; }
+  .app-side { flex-direction: row; align-items: center; justify-content: space-between; }
+  .detail-grid { gap: 40px; }
+}
+
+@media (max-width: 640px) {
+  .brand-tag { display: none; }
+  .header-row { padding-block: 10px; }
+  .finder { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .admin-form, .inline-form { grid-template-columns: 1fr; }
+  .detail-list > div { grid-template-columns: 1fr; gap: 2px; }
+  .ticket-facts { grid-template-columns: repeat(2, auto); }
+  .page-head-row { flex-direction: column; }
+
+  /* The ticket turns sideways: the stub moves to the bottom and the
+     perforation becomes a horizontal line. */
+  .ticket, .ticket--compact {
+    --stub-h: 84px;
+    grid-template-columns: 1fr;
+    -webkit-mask:
+      radial-gradient(circle var(--notch) at 0 calc(100% - var(--stub-h)), transparent 97%, #000) left / 51% 100% no-repeat,
+      radial-gradient(circle var(--notch) at 100% calc(100% - var(--stub-h)), transparent 97%, #000) right / 51% 100% no-repeat;
+    mask:
+      radial-gradient(circle var(--notch) at 0 calc(100% - var(--stub-h)), transparent 97%, #000) left / 51% 100% no-repeat,
+      radial-gradient(circle var(--notch) at 100% calc(100% - var(--stub-h)), transparent 97%, #000) right / 51% 100% no-repeat;
+  }
+  .ticket-stub {
+    height: var(--stub-h); flex-direction: row; justify-content: space-between; gap: 12px;
+    padding: 0 24px; border-left: 0; border-top: 2px dashed var(--line-strong);
+  }
+  .stub-label, .stub-left { margin: 0; }
+  .stub-date { flex-direction: row; align-items: baseline; gap: 8px; }
+  .stub-day { font-size: 2rem; }
+  .ticket--compact .ticket-stub { padding: 0 24px; }
+}
+
+
+/* ---------- 13. Reduced motion --------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
